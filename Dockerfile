@@ -5,16 +5,17 @@ RUN apk add --no-cache python3 make g++ vips-dev
 
 WORKDIR /app
 
-# Copy package files and install runtime deps
+# Install runtime deps
 COPY package.json ./
 RUN npm install --production
 
-# Copy built app
+# Copy built server and frontend
 COPY dist/ ./dist/
-COPY uploads/ ./uploads/ 2>/dev/null || mkdir -p uploads
+
+# Create uploads dir for extracted wine images
+RUN mkdir -p uploads
 
 EXPOSE 3000
-
 ENV NODE_ENV=production
 ENV PORT=3000
 
