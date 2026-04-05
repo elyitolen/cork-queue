@@ -1,18 +1,19 @@
 FROM node:20-alpine
 
-# Install build dependencies for better-sqlite3 and sharp
-RUN apk add --no-cache python3 make g++ vips-dev
+# vips is needed by sharp (pre-built binary — no compilation required)
+RUN apk add --no-cache vips-dev
 
 WORKDIR /app
 
-# Install runtime deps
+# Install runtime deps — sharp uses pre-built binaries for linux-x64-musl
 COPY package.json ./
-RUN npm install --production
+RUN npm install --production --ignore-scripts && \
+    npm install sharp --ignore-scripts=false
 
 # Copy built server and frontend
 COPY dist/ ./dist/
 
-# Create uploads dir for extracted wine images
+# Uploads dir for extracted wine images
 RUN mkdir -p uploads
 
 EXPOSE 3000
